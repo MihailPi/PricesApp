@@ -32,6 +32,46 @@ namespace FuckingPricesApp
         private void Form1_Load(object sender, EventArgs e)
         {
         }
+        
+        private void Form1_DragEnter(object sender, DragEventArgs e)
+        {   //  Проверяем что элемент перетаскиваемый
+            if (e.Data.GetDataPresent(DataFormats.FileDrop, false))
+            {
+                e.Effect = DragDropEffects.All;
+            }
+        }
+
+        private void Form1_DragDrop(object sender, DragEventArgs e)
+        {   //  Обработка перенесенных в область окна файлов
+            string[] dropFiles = (string[])e.Data.GetData(DataFormats.FileDrop);
+            foreach (var file in dropFiles)
+            {   //  Если хоть один из них не .xls
+                if (!Path.GetExtension(file).Equals(".xls"))
+                {
+                    MessageBox.Show("Не все из перенесенных файлов имеют формат .xls\n" +
+                        "Попробуйте еще раз!", "Warning!");
+                    return;
+                }
+            }
+            
+            //  Если файлов больше одного
+            if (dropFiles.Length > 1)
+            {
+                pathToGroupExcelFiles = dropFiles;
+                ChoseGroupLabel.Text = $"Файлов: {pathToGroupExcelFiles.Length}";
+                PacketCheckBox.Checked = true;
+                SaveGroupBotton.Enabled = true;
+                ChoseImagesFolderButton_1.Enabled = false;
+                ChoseDiscriptionButton.Enabled = false;
+            }
+            else
+            {
+                pathToExcelFile = dropFiles[0];
+                ChoseLabel_1.Text = $"Выбран файл: {pathToExcelFile}";
+                ChoseImagesFolderButton_1.Enabled = true;
+                ChoseDiscriptionButton.Enabled = true;
+            }
+        }
         /// <summary>
         /// Обработчики кнопок и чек-боксов
         /// </summary>
@@ -334,7 +374,7 @@ namespace FuckingPricesApp
         private void CreateImages(string path)
         {
             var pageBuilder = new PageBuilder(rows: 4, colums: 3);
-            var list = pageBuilder.GetCreatedPages(listOfProduct, path);
+            var list = pageBuilder.GetCreatedPages(listOfProduct, path, AddCheckBox.Checked);
             Directory.CreateDirectory(tempPath);
             pageBuilder.SaveRender(list, tempPath);
         }
@@ -372,5 +412,6 @@ namespace FuckingPricesApp
             }
             catch { }
         }
+
     }
 }

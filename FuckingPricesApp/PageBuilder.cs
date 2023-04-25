@@ -63,7 +63,7 @@ namespace FuckingPricesApp
             _bottomGap = _cellHeight + _topGap - _fontSize;
             _rigthGap = _cellwidth + _leftGap - _priceRectWidth - _offset;
         }
-        public List<BitmapSource> GetCreatedPages(List<Product> productList, string fileName)
+        public List<BitmapSource> GetCreatedPages(List<Product> productList, string fileName, bool isAddedFrontPage)
         {
             FormattedText formattedTextTitle;
             FormattedText formattedTextPrice;
@@ -189,17 +189,35 @@ namespace FuckingPricesApp
 
                             rowsCounter = 1;
                             //  Номер страницы
-                            if (pageNumber % 2 == 0)
-                            {
-                                drawingContext.DrawText(formattedTextPageNumber,
-                                    new Point(_leftGap * 2, 
-                                    _backgroundImageHeight - _topGap * 2 + 35));
-                            }
-                            else
-                            {
-                                drawingContext.DrawText(formattedTextPageNumber,
+                            if(isAddedFrontPage)
+                            {   //  Если добавленна титульная страница, то добавляем номер страницы слева если четная
+                                if (pageNumber % 2 == 0)
+                                {
+                                    drawingContext.DrawText(formattedTextPageNumber,
                                     new Point(_backgroundImageWidth - _leftGap * 2,
                                                _backgroundImageHeight - _topGap * 2 + 35));
+                                } 
+                                else
+                                {   //  И справа если не четная
+                                    drawingContext.DrawText(formattedTextPageNumber,
+                                    new Point(_leftGap * 2,
+                                    _backgroundImageHeight - _topGap * 2 + 35));
+                                }
+                            }
+                            else
+                            {   //  Если титульника нет, то справа если четная
+                                if (pageNumber % 2 == 0)
+                                {
+                                    drawingContext.DrawText(formattedTextPageNumber,
+                                        new Point(_leftGap * 2,
+                                        _backgroundImageHeight - _topGap * 2 + 35));
+                                }
+                                else
+                                {   //  И слева если нечетная
+                                    drawingContext.DrawText(formattedTextPageNumber,
+                                        new Point(_backgroundImageWidth - _leftGap * 2,
+                                                   _backgroundImageHeight - _topGap * 2 + 35));
+                                }
                             }
                             pageNumber++;
                             break;
